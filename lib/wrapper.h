@@ -34,8 +34,8 @@ void unabtoTick();
 // No more than MAX_EVENT_HANDLERS handlers may be set.
 #define MAX_EVENT_HANDLERS 1024
 typedef application_event_result (*unabtoEventHandler)(
-    application_request* request, buffer_read_t* read_buffer,
-    buffer_write_t* write_buffer);
+    application_request* request, unabto_query_request* query_request,
+    unabto_query_response* query_response);
 int unabtoRegisterEventHandler(int queryId, unabtoEventHandler handler);
 
 #endif  // WRAPPER_H_
