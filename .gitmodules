@@ -1,0 +1,4 @@
+[submodule "lib/unabto"]
+	path = lib/unabto
+	url = https://github.com/nabto/unabto.git
+	branch = 4.2
