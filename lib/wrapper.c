@@ -14,15 +14,15 @@ char* unabtoVersion() {
   return version;
 }
 
-bool unabtoConfigure(UnabtoConfig* config) {
+int unabtoConfigure(const char* id, const char* presharedKey) {
   setbuf(stdout, NULL);
 
   nms = unabto_init_context();
-  nms->id = strdup(config->id);
+  nms->id = strdup(id);
   nms->secureAttach = true;
   nms->secureData = true;
   nms->cryptoSuite = CRYPT_W_AES_CBC_HMAC_SHA256;
-  if (!unabto_read_psk_from_hex(config->presharedKey, nms->presharedKey, 16))
+  if (!unabto_read_psk_from_hex(presharedKey, nms->presharedKey, 16))
     return -1;
   return 0;
 }

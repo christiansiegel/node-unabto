@@ -7,17 +7,8 @@
 // Returns the currently implemented version of uNabto.
 char* unabtoVersion();
 
-// Defines a configuration of uNabto.
-struct UnabtoConfig {
-  // The id of the server. This has to be unique.
-  char* id;
-  // The preshared key of the secure connection.
-  char* presharedKey;
-};
-typedef struct UnabtoConfig UnabtoConfig;
-
 // Sets a new configuration.
-void unabtoConfigure(UnabtoConfig* config);
+int unabtoConfigure(const char* id, const char* presharedKey);
 
 // Init and start the uNabto server with the specified configuration
 int unabtoInit();
