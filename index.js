@@ -93,11 +93,11 @@ class UNabtoQueryResponse extends UNabtoBuffer {
   }
 
   writeInt16(value) {
-    this._data().writeInt16LE(value, this._posCheckUpdate(2));
+    this._data().writeInt16BE(value, this._posCheckUpdate(2));
   }
 
   writeInt32(value) {
-    this._data().writeInt32LE(value, this._posCheckUpdate(4));
+    this._data().writeInt32BE(value, this._posCheckUpdate(4));
   }
 
   writeUInt8(value) {
@@ -105,11 +105,11 @@ class UNabtoQueryResponse extends UNabtoBuffer {
   }
 
   writeUInt16(value) {
-    this._data().writeUInt16LE(value, this._posCheckUpdate(2));
+    this._data().writeUInt16BE(value, this._posCheckUpdate(2));
   }
 
   writeUInt32(value) {
-    this._data().writeUInt32LE(value, this._posCheckUpdate(4));
+    this._data().writeUInt32BE(value, this._posCheckUpdate(4));
   }
 
   writeUInt8List(list) {
@@ -138,11 +138,11 @@ class UNabtoQueryRequest extends UNabtoBuffer {
   }
 
   readInt16() {
-    return this._data().readInt16LE(this._posCheckUpdate(2));
+    return this._data().readInt16BE(this._posCheckUpdate(2));
   }
 
   readInt32() {
-    return this._data().readInt32LE(this._posCheckUpdate(4));
+    return this._data().readInt32BE(this._posCheckUpdate(4));
   }
 
   readUInt8() {
@@ -150,11 +150,11 @@ class UNabtoQueryRequest extends UNabtoBuffer {
   }
 
   readUInt16() {
-    return this._data().readUInt16LE(this._posCheckUpdate(2));
+    return this._data().readUInt16BE(this._posCheckUpdate(2));
   }
 
   readUInt32() {
-    return this._data().readUInt32LE(this._posCheckUpdate(4));
+    return this._data().readUInt32BE(this._posCheckUpdate(4));
   }
 
   readUint8List() {
