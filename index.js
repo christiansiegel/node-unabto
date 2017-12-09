@@ -224,6 +224,11 @@ function validateDevice(device, appMyProduct) {
   }
 };
 
+function tick() {
+  libunabto.unabtoTick();
+  setTimeout(tick, 10);
+}
+
 exports.version = function () {
   return libunabto.unabtoVersion();
 };
@@ -272,14 +277,13 @@ exports.init = function (device, appMyProduct) {
     throw new Error("Cannot load access control list file!");
   if (res == -3)
     throw new Error("Error initializing Nabto!");
+
+  tick();
 };
 
 exports.close = function () {
+  clearTimeout(tick);
   libunabto.unabtoClose();
-};
-
-exports.tick = function () {
-  libunabto.unabtoTick();
 };
 
 exports.registerHandler = function (queryId, handler) {
