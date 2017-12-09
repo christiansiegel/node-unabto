@@ -41,6 +41,9 @@ struct handler currentHandlers[MAX_EVENT_HANDLERS];
 int nextHandlerSlot = 0;
 int unabtoRegisterEventHandler(int queryId, unabtoEventHandler handler) {
   if (nextHandlerSlot >= MAX_EVENT_HANDLERS) return -1;
+  for (int i = 0; i < nextHandlerSlot; i++)
+    if (currentHandlers[i].queryId == queryId)
+      return -2;
   currentHandlers[nextHandlerSlot].queryId = queryId;
   currentHandlers[nextHandlerSlot].handler = handler;
   nextHandlerSlot++;

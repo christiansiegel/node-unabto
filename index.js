@@ -217,6 +217,11 @@ exports.registerHandler = function (queryId, handler) {
         }
       }
     });
-  libunabto.unabtoRegisterEventHandler(queryId, callback)
-  _callbacks.push(callback);
+  var res = libunabto.unabtoRegisterEventHandler(queryId, callback);
+  if (res == -1)
+    throw new Error("Can't register more handlers!");
+  else if (res == -2)
+    throw new Error("Handler for queryId " + queryId + " already registered!");
+  else
+    _callbacks.push(callback);
 };
