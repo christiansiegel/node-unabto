@@ -32,7 +32,7 @@ var unabto_abuffer = struct({
 
 var libunabto = ffi.Library(path.resolve(__dirname, 'libunabto'), {
   'unabtoVersion': [ref.types.CString, []],
-  'unabtoConfigure': [ref.types.int, [ref.types.CString, ref.types.CString]],
+  'unabtoConfigure': [ref.types.int, [ref.types.CString, ref.types.CString, ref.types.uint16]],
   'unabtoInit': [ref.types.int, []],
   'unabtoClose': [ref.types.void, []],
   'unabtoTick': [ref.types.void, []],
@@ -177,8 +177,9 @@ exports.version = function () {
   return libunabto.unabtoVersion();
 };
 
-exports.config = function (id, presharedKey) {
-  if (libunabto.unabtoConfigure(id, presharedKey) == -1)
+exports.config = function (id, presharedKey, localPort) {
+  localPort = localPort || 0;
+  if (libunabto.unabtoConfigure(id, presharedKey, localPort) == -1)
     throw new Error("Invalid pre-shared key");
 };
 

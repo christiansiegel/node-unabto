@@ -8,7 +8,7 @@
 char* unabtoVersion();
 
 // Sets a new configuration.
-int unabtoConfigure(const char* id, const char* presharedKey);
+int unabtoConfigure(const char* id, const char* presharedKey, uint16_t localPort);
 
 // Init and start the uNabto server with the specified configuration
 int unabtoInit();

@@ -14,7 +14,7 @@ char* unabtoVersion() {
   return version;
 }
 
-int unabtoConfigure(const char* id, const char* presharedKey) {
+int unabtoConfigure(const char* id, const char* presharedKey, uint16_t localPort) {
   setbuf(stdout, NULL);
 
   nms = unabto_init_context();
@@ -22,6 +22,7 @@ int unabtoConfigure(const char* id, const char* presharedKey) {
   nms->secureAttach = true;
   nms->secureData = true;
   nms->cryptoSuite = CRYPT_W_AES_CBC_HMAC_SHA256;
+  if (localPort != 0) nms->localPort = localPort;
   if (!unabto_read_psk_from_hex(presharedKey, nms->presharedKey, 16))
     return -1;
   return 0;
