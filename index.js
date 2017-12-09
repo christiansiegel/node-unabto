@@ -30,9 +30,21 @@ var unabto_abuffer = struct({
   'position': ref.types.uint16
 });
 
+var UnabtoConfig = struct({
+  'deviceId': ref.types.CString,
+  'presharedKey': ref.types.CString,
+  'localPort': ref.types.uint16,
+  'deviceName': ref.types.CString,
+  'productName': ref.types.CString,
+  'iconUrl': ref.types.CString,
+  'deviceInterfaceId': ref.types.CString,
+  'deviceInterfaceVersionMajor': ref.types.uint16,
+  'deviceInterfaceVersionMinor': ref.types.uint16
+});
+
 var libunabto = ffi.Library(path.resolve(__dirname, 'libunabto'), {
   'unabtoVersion': [ref.types.CString, []],
-  'unabtoConfigure': [ref.types.int, [ref.types.CString, ref.types.CString, ref.types.uint16]],
+  'unabtoConfigure': [ref.types.int, [ref.refType(UnabtoConfig)]],
   'unabtoInit': [ref.types.int, []],
   'unabtoClose': [ref.types.void, []],
   'unabtoTick': [ref.types.void, []],
@@ -173,13 +185,48 @@ class UNabtoQueryRequest extends UNabtoBuffer {
   }
 }
 
+function validateDevice(device) {
+  if (!device.hasOwnProperty("id"))
+    throw new Error("Device should have an ID!");
+  if (!device.hasOwnProperty("presharedKey"))
+    throw new Error("Device should have a pre-shared key!");
+  if (!device.hasOwnProperty("name"))
+    throw new Error("Device should have a name!");
+  if (!device.hasOwnProperty("productName"))
+    throw new Error("Device should have a product name!");
+  if (!device.hasOwnProperty("iconUrl"))
+    throw new Error("Device should have an icon url!");
+  if (!device.hasOwnProperty("iface"))
+    throw new Error("Device should have an interface definition!");
+  if (!device.iface.hasOwnProperty("id"))
+    throw new Error("Device interface should have an ID!");
+  if (!device.iface.hasOwnProperty("version"))
+    throw new Error("Device interface should have a version!");
+  if (!device.iface.version.hasOwnProperty("minor"))
+    throw new Error("Device interface version should have a minor number!");
+  if (!device.iface.version.hasOwnProperty("major"))
+    throw new Error("Device interface version should have a major number!");
+};
+
 exports.version = function () {
   return libunabto.unabtoVersion();
 };
 
-exports.config = function (id, presharedKey, localPort) {
-  localPort = localPort || 0;
-  if (libunabto.unabtoConfigure(id, presharedKey, localPort) == -1)
+exports.config = function (device) {
+  validateDevice(device);
+
+  var config = new UnabtoConfig();
+  config.deviceId = device.id;
+  config.presharedKey = device.presharedKey;
+  config.localPort = device.localPort || 0;
+  config.deviceName = device.name;
+  config.productName = device.productName;
+  config.iconUrl = device.iconUrl;
+  config.deviceInterfaceId = device.iface.id;
+  config.deviceInterfaceVersionMajor = device.iface.version.major;
+  config.deviceInterfaceVersionMinor = device.iface.version.minor;
+
+  if (libunabto.unabtoConfigure(config.ref()))
     throw new Error("Invalid pre-shared key");
 };
 

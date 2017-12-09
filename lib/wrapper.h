@@ -4,11 +4,34 @@
 
 #include <unabto/unabto_app.h>
 
+// Defines a configuration of uNabto.
+struct UnabtoConfig {
+  // The device id of the server. This has to be unique.
+  char* deviceId;
+  // The preshared key of the secure connection.
+  char* presharedKey;
+  // The used local port of the server. Set to 0 for using default.
+  uint16_t localPort;
+  // The device name.
+  char* deviceName;
+  // The product name of the device.
+  char* productName;
+  // The icon url to use on the client.
+  char* iconUrl;
+  // The interface id.
+  char* deviceInterfaceId;
+  // The interface's major version number.
+  uint16_t deviceInterfaceVersionMajor;
+  // The interface's minor version number.
+  uint16_t deviceInterfaceVersionMinor;
+};
+typedef struct UnabtoConfig UnabtoConfig;
+
 // Returns the currently implemented version of uNabto.
 char* unabtoVersion();
 
 // Sets a new configuration.
-int unabtoConfigure(const char* id, const char* presharedKey, uint16_t localPort);
+int unabtoConfigure(UnabtoConfig* config);
 
 // Init and start the uNabto server with the specified configuration
 int unabtoInit();

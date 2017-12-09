@@ -8,22 +8,26 @@
 // The uNabto main config structure.
 nabto_main_setup* nms;
 
+UnabtoConfig config;
+
 char* unabtoVersion() {
   static char version[21];
   sprintf(version, PRIversion, MAKE_VERSION_PRINTABLE());
   return version;
 }
 
-int unabtoConfigure(const char* id, const char* presharedKey, uint16_t localPort) {
+int unabtoConfigure(UnabtoConfig* config_) {
   setbuf(stdout, NULL);
 
+  config = *config_;
+
   nms = unabto_init_context();
-  nms->id = strdup(id);
+  nms->id = strdup(config.deviceId);
   nms->secureAttach = true;
   nms->secureData = true;
   nms->cryptoSuite = CRYPT_W_AES_CBC_HMAC_SHA256;
-  if (localPort != 0) nms->localPort = localPort;
-  if (!unabto_read_psk_from_hex(presharedKey, nms->presharedKey, 16))
+  if (config.localPort != 0) nms->localPort = config.localPort;
+  if (!unabto_read_psk_from_hex(config.presharedKey, nms->presharedKey, 16))
     return -1;
   return 0;
 }
@@ -43,8 +47,7 @@ int nextHandlerSlot = 0;
 int unabtoRegisterEventHandler(int queryId, unabtoEventHandler handler) {
   if (nextHandlerSlot >= MAX_EVENT_HANDLERS) return -1;
   for (int i = 0; i < nextHandlerSlot; i++)
-    if (currentHandlers[i].queryId == queryId)
-      return -2;
+    if (currentHandlers[i].queryId == queryId) return -2;
   currentHandlers[nextHandlerSlot].queryId = queryId;
   currentHandlers[nextHandlerSlot].handler = handler;
   nextHandlerSlot++;
