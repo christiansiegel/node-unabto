@@ -11,7 +11,8 @@
     "ref":"*",
     "ref-struct":"*",
     "path":"*",
-    "cmake-js":"*"
+    "cmake-js":"*",
+    "uint32":"*"
   },
   "scripts": {
     "install": "cmake-js compile"

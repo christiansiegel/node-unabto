@@ -4,6 +4,7 @@ var ffi = require('ffi');
 var path = require('path');
 var ref = require('ref');
 var struct = require('ref-struct');
+var uint32 = require('uint32');
 
 const AER_REQ_RESPONSE_READY = 0;
 const AER_REQ_TOO_SMALL = 5;
@@ -39,13 +40,16 @@ var UnabtoConfig = struct({
   'iconUrl': ref.types.CString,
   'deviceInterfaceId': ref.types.CString,
   'deviceInterfaceVersionMajor': ref.types.uint16,
-  'deviceInterfaceVersionMinor': ref.types.uint16
+  'deviceInterfaceVersionMinor': ref.types.uint16,
+  'systemPermissions': ref.types.uint32,
+  'defaultUserPermissions': ref.types.uint32,
+  'firstUserPermissions': ref.types.uint32,
+  'aclFile': ref.types.CString
 });
 
 var libunabto = ffi.Library(path.resolve(__dirname, 'libunabto'), {
   'unabtoVersion': [ref.types.CString, []],
-  'unabtoConfigure': [ref.types.int, [ref.refType(UnabtoConfig)]],
-  'unabtoInit': [ref.types.int, []],
+  'unabtoInit': [ref.types.int, [ref.refType(UnabtoConfig), ref.types.bool]],
   'unabtoClose': [ref.types.void, []],
   'unabtoTick': [ref.types.void, []],
   'unabtoRegisterEventHandler': [ref.types.int, [ref.types.int, ref.refType(ref.types.void)]]
@@ -185,54 +189,89 @@ class UNabtoQueryRequest extends UNabtoBuffer {
   }
 }
 
-function validateDevice(device) {
+function validateDevice(device, appMyProduct) {
   if (!device.hasOwnProperty("id"))
     throw new Error("Device should have an ID!");
   if (!device.hasOwnProperty("presharedKey"))
     throw new Error("Device should have a pre-shared key!");
-  if (!device.hasOwnProperty("name"))
-    throw new Error("Device should have a name!");
-  if (!device.hasOwnProperty("productName"))
-    throw new Error("Device should have a product name!");
-  if (!device.hasOwnProperty("iconUrl"))
-    throw new Error("Device should have an icon url!");
-  if (!device.hasOwnProperty("iface"))
-    throw new Error("Device should have an interface definition!");
-  if (!device.iface.hasOwnProperty("id"))
-    throw new Error("Device interface should have an ID!");
-  if (!device.iface.hasOwnProperty("version"))
-    throw new Error("Device interface should have a version!");
-  if (!device.iface.version.hasOwnProperty("minor"))
-    throw new Error("Device interface version should have a minor number!");
-  if (!device.iface.version.hasOwnProperty("major"))
-    throw new Error("Device interface version should have a major number!");
+  if (appMyProduct) {
+    if (!device.hasOwnProperty("name"))
+      throw new Error("Device should have a name!");
+    if (!device.hasOwnProperty("productName"))
+      throw new Error("Device should have a product name!");
+    if (!device.hasOwnProperty("iconUrl"))
+      throw new Error("Device should have an icon url!");
+    if (!device.hasOwnProperty("iface"))
+      throw new Error("Device should have an interface definition!");
+    if (!device.iface.hasOwnProperty("id"))
+      throw new Error("Device interface should have an ID!");
+    if (!device.iface.hasOwnProperty("version"))
+      throw new Error("Device interface should have a version!");
+    if (!device.iface.version.hasOwnProperty("minor"))
+      throw new Error("Device interface version should have a minor number!");
+    if (!device.iface.version.hasOwnProperty("major"))
+      throw new Error("Device interface version should have a major number!");
+    if (!device.hasOwnProperty("permission"))
+      throw new Error("Device should have an permission definition!");
+    if (!device.permission.hasOwnProperty("system"))
+      throw new Error("Device should have an system permission definition!");
+    if (!device.permission.hasOwnProperty("firstUser"))
+      throw new Error("Device should have an first user permission definition!");
+    if (!device.permission.hasOwnProperty("defaultUser"))
+      throw new Error("Device should have an default user permission definition!");
+    if (!device.permission.hasOwnProperty("dbFile"))
+      throw new Error("Device should have a file to store the permission database!");
+  }
 };
 
 exports.version = function () {
   return libunabto.unabtoVersion();
 };
 
-exports.config = function (device) {
-  validateDevice(device);
+exports.init = function (device, appMyProduct) {
+  appMyProduct = appMyProduct || false;
+  validateDevice(device, appMyProduct);
 
   var config = new UnabtoConfig();
   config.deviceId = device.id;
   config.presharedKey = device.presharedKey;
   config.localPort = device.localPort || 0;
-  config.deviceName = device.name;
-  config.productName = device.productName;
-  config.iconUrl = device.iconUrl;
-  config.deviceInterfaceId = device.iface.id;
-  config.deviceInterfaceVersionMajor = device.iface.version.major;
-  config.deviceInterfaceVersionMinor = device.iface.version.minor;
 
-  if (libunabto.unabtoConfigure(config.ref()))
-    throw new Error("Invalid pre-shared key");
-};
+  if (appMyProduct) {
+    config.deviceName = device.name;
+    config.productName = device.productName;
+    config.iconUrl = device.iconUrl;
+    config.deviceInterfaceId = device.iface.id;
+    config.deviceInterfaceVersionMajor = device.iface.version.major;
+    config.deviceInterfaceVersionMinor = device.iface.version.minor;
+    config.aclFile = device.permission.dbFile;
 
-exports.init = function () {
-  if (libunabto.unabtoInit() == -1)
-    throw new Error("Error initializing Nabto");
+    config.systemPermissions = uint32.or(
+      device.permission.system.pairing ? 0x20000000 : 0,
+      device.permission.system.local ? 0x40000000 : 0,
+      device.permission.system.remote ? 0x80000000 : 0
+    );
+
+    config.firstUserPermissions = uint32.or(
+      device.permission.firstUser.admin ? 0x20000000 : 0,
+      device.permission.firstUser.local ? 0x40000000 : 0,
+      device.permission.firstUser.remote ? 0x80000000 : 0
+    );
+
+    config.defaultUserPermissions = uint32.or(
+      device.permission.defaultUser.admin ? 0x20000000 : 0,
+      device.permission.defaultUser.local ? 0x40000000 : 0,
+      device.permission.defaultUser.remote ? 0x80000000 : 0
+    );
+  }
+
+  var res = libunabto.unabtoInit(config.ref(), appMyProduct);
+  if (res == -1)
+    throw new Error("Invalid pre-shared key!");
+  if (res == -2)
+    throw new Error("Cannot load access control list file!");
+  if (res == -3)
+    throw new Error("Error initializing Nabto!");
 };
 
 exports.close = function () {
@@ -268,8 +307,7 @@ exports.registerHandler = function (queryId, handler) {
   var res = libunabto.unabtoRegisterEventHandler(queryId, callback);
   if (res == -1)
     throw new Error("Can't register more handlers!");
-  else if (res == -2)
+  if (res == -2)
     throw new Error("Handler for queryId " + queryId + " already registered!");
-  else
-    _callbacks.push(callback);
+  _callbacks.push(callback);
 };

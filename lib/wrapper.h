@@ -4,6 +4,10 @@
 
 #include <unabto/unabto_app.h>
 
+#include <modules/fingerprint_acl/fp_acl_ae.h>
+#include <modules/fingerprint_acl/fp_acl_file.h>
+#include <modules/fingerprint_acl/fp_acl_memory.h>
+
 // Defines a configuration of uNabto.
 struct UnabtoConfig {
   // The device id of the server. This has to be unique.
@@ -24,17 +28,22 @@ struct UnabtoConfig {
   uint16_t deviceInterfaceVersionMajor;
   // The interface's minor version number.
   uint16_t deviceInterfaceVersionMinor;
+  // Permission bits controlling the system.
+  uint32_t systemPermissions;
+  // Default permissions for new users.
+  uint32_t defaultUserPermissions;
+  // Permissions to give the first user of the system.
+  uint32_t firstUserPermissions;
+  // The access control database file path.
+  char* aclFile;
 };
 typedef struct UnabtoConfig UnabtoConfig;
 
 // Returns the currently implemented version of uNabto.
 char* unabtoVersion();
 
-// Sets a new configuration.
-int unabtoConfigure(UnabtoConfig* config);
-
 // Init and start the uNabto server with the specified configuration
-int unabtoInit();
+int unabtoInit(UnabtoConfig* config, bool appMyProduct);
 
 // Close the uNabto server.
 void unabtoClose();
