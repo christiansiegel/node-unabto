@@ -1,3 +1,8 @@
+//
+// Heatpump example similar to the AppMyProduct heatpump device stub from the
+// AppMyProduct tutorial (https://www.appmyproduct.com/tutorial.html).
+//
+
 var unabto = require('unabto');
 
 // Print uNabto version

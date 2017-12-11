@@ -1,3 +1,7 @@
+//
+// Basic example demonstrating the uNabto wrapper API.
+//
+
 var sleep = require('sleep');
 var unabto = require('unabto');
 
