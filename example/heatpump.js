@@ -84,8 +84,8 @@ unabto.registerHandler(20030, function (request, queryRequest, queryResponse) {
 
 // Start uNabto
 unabto.init({
-  id: "<DEVICE ID>",
-  presharedKey: "<PRESHARED KEY>",
+  id: "<DEVICE ID>", // Device ID from https://appmyproduct.com/
+  presharedKey: "<PRESHARED KEY>", // Licence key from https://appmyproduct.com/
   name: "AMP Node.js Stub",
   productName: "ACME 9002 Heatpump",
   iconUrl: "img/chip-small.png",

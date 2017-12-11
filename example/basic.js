@@ -16,8 +16,8 @@ unabto.registerHandler(1, function (request, queryRequest, queryResponse) {
 
 // Start uNabto
 unabto.init({
-  id: "<DEVICE ID>",
-  presharedKey: "<PRESHARED KEY>",
+  id: "<DEVICE ID>", // Device ID from https://appmyproduct.com/
+  presharedKey: "<PRESHARED KEY>", // Licence key from https://appmyproduct.com/
   localPort: 9000, // optional
 });
 
