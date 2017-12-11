@@ -1,0 +1,6 @@
+build/
+example/acl.db
+libunabto.so
+lib/unabto/3rdparty/nuvoton/
+lib/unabto/apps/
+lib/unabto/test/
