@@ -1,31 +1,24 @@
 {
   "name":"unabto",
-  "version":"0.0.1",
-  "description":"Remote control your Node.js app directly from apps - in real-time. Securely. No firewall hassle.",
+  "version":"1.0.0",
+  "description":"A wrapper for uNabto",
   "main":"index.js",
   "directories":{
     "example":"example"
   },
   "dependencies":{
-    "ffi":"*",
-    "ref":"*",
-    "ref-struct":"*",
-    "path":"*",
-    "cmake-js":"*",
-    "uint32":"*"
+    "cmake-js":">=3.6.0",
+    "ffi":">=0.5.7",
+    "ref":">=1.3.5",
+    "ref-struct":">=1.1.0",
+    "uint32":">=0.2.1"
   },
-  "scripts": {
-    "install": "cmake-js compile"
+  "scripts":{
+    "install":"cmake-js compile"
   },
-  "contributors":[
-    {
-      "name":"Christian Siegel",
-      "email":"christian.siegel@gmx.net"
-    }
-  ],
   "repository":{
     "type":"git",
-    "url":"git://github.com/christiansiegel/node-nabto.git"
+    "url":"git+https://github.com/christiansiegel/node-unabto.git"
   },
   "keywords":[
     "nabto",
@@ -33,8 +26,13 @@
     "control",
     "secure",
     "firewall",
-    "p2p"
+    "p2p",
+    "iot"
   ],
   "author":"Christian Siegel <christian.siegel@gmx.net>",
-  "license":"MIT"
+  "license":"MIT",
+  "bugs":{
+    "url":"https://github.com/christiansiegel/node-unabto/issues"
+  },
+  "homepage":"https://github.com/christiansiegel/node-unabto#readme"
 }
